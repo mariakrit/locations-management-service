@@ -1,0 +1,36 @@
+# H2 Database Configuration
+spring:
+  datasource:
+    url: jdbc:h2:file:C:/data/mydb
+    username: sa
+    password: 
+    driverClassName: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: true
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+      settings:
+        web-allow-others: true
+  cache:
+    cache-names:
+    - location
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=600s
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui/
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
