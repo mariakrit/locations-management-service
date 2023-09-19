@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,15 +38,15 @@ public class LocationEntity extends EntityWithUUID {
 
 	@Embedded
 	@Column(name = LocationEntity.GEOLOCATION)
-	@Nullable
-	private Location location;
+	@NotNull
+	private GeoLocation geoLocation;
 
 	@Column(name = LocationEntity.NAME)
 	@Nullable
 	private String name;
 
 	@Column(name = LocationEntity.REWARDCHECKINPOINTS)
-	@Nullable
+	@NotNull
 	private int rewardCheckinPoints;
 
 	@Column(name = LocationEntity.TAGS)

@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import locations.management.service.measure.time.MeasureTime;
 import locations.management.service.models.LocationPutSwaggerDto;
-import locations.management.service.models.LocationCreateSwaggerDto;
+import locations.management.service.models.LocationCreateDto;
 import locations.management.service.models.LocationEntity;
 import locations.management.service.repository.LocationRepository;
 
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +50,25 @@ public class LocationController {
 	Logger log = LoggerFactory.getLogger(LocationController.class);
 
 	private final LocationRepository locationRepository;
+	
+	private final ModelMapper modelMapper;
+	
+	private final ObjectMapper objectMapper;
 
 	@Autowired
-	public LocationController(LocationRepository locationRepository) {
+	public LocationController(LocationRepository locationRepository, ModelMapper modelMapper, ObjectMapper objectMapper) {
 		this.locationRepository = locationRepository;
+		this.modelMapper = modelMapper;
+		this.objectMapper = objectMapper;
 	}
 
 
 
+	/**
+	 * Retrieve all locations existing on the database
+	 * 
+	 * @return a List of all locations in the database
+	 */
 	@MeasureTime
 	@CacheEvict(cacheNames = "location", allEntries = true)
 	@GetMapping(value = { "/retrieveAll" }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,6 +80,12 @@ public class LocationController {
 
 
 
+	/**
+	 * Retrieve location based on uuid
+	 * 
+	 * @param uuid
+	 * @return Requested location
+	 */
 	@MeasureTime
 	@Cacheable(value = "location")
 	@GetMapping(value = { "/retrieveById/{uuid}" }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -81,6 +99,12 @@ public class LocationController {
 
 
 
+	/**
+	 * Creation of new location
+	 * 
+	 * @param locationCreateSwaggerDto
+	 * @return Location has been created
+	 */
 	@MeasureTime
 	@CachePut(cacheNames = "location")
 	@PostMapping(value = {"/create" }, 
@@ -88,45 +112,60 @@ public class LocationController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(
 			content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-			   schema = @Schema(implementation = LocationCreateSwaggerDto.class))
-			 })	
+			            		 schema = @Schema(implementation = LocationCreateDto.class)
+								 )
+			 		  })	
 	public ResponseEntity<LocationEntity> create(
 			@RequestBody @Parameter(description = "The input location to be created.") 
-			LocationEntity locationEntity) {
-		
-		return new ResponseEntity<>(locationRepository.save(locationEntity), HttpStatus.CREATED);
+			LocationCreateDto locationCreateSwaggerDto) {
 
+		LocationEntity locationEntity = modelMapper.map(locationCreateSwaggerDto, LocationEntity.class);
+
+		return new ResponseEntity<>(locationRepository.save(locationEntity), HttpStatus.CREATED);
 	}
 
 
 
+	/**
+	 * Partially location update
+	 * 
+	 * @param uuid
+	 * @param inputFields
+	 * @return LocationEntity has been updated
+	 * @throws JsonMappingException
+	 */
 	@MeasureTime
     @CachePut(value = "location", key = "#uuid")//update 'location' cache with this specific updated uuid record
 	@PutMapping(value = {"/update/{uuid}" }, 
 			consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(
-			content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-			   schema = @Schema(implementation = LocationPutSwaggerDto.class))
-			 })	
+			content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
+								schema = @Schema(implementation = LocationPutSwaggerDto.class)
+								)
+					  })	
 	public ResponseEntity<LocationEntity> updateLocation(
 			@PathVariable @Parameter(description = "The Id to find the existing location.")
 			UUID uuid, 
 			@RequestBody @Parameter(description = "The fields to be updated.") 
 			Map<String, Object> inputFields) throws JsonMappingException {
 
-		LocationEntity location = locationRepository.findById(uuid)
+		LocationEntity locationEntity = locationRepository.findById(uuid)
 				.orElseThrow(() -> new RuntimeException("Location not exist with id: " + uuid));
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.updateValue(location, inputFields);
+		objectMapper.updateValue(locationEntity, inputFields);
 
-		
-		return ResponseEntity.ok(locationRepository.save(location));
+		return ResponseEntity.ok(locationRepository.save(locationEntity));
 	}
 
 
 
+	/**
+	 * Delete record
+	 * 
+	 * @param uuid
+	 * @return uuid has been deleted successfully
+	 */
 	@MeasureTime
     @CacheEvict(value = "location", key = "#uuid")
 	@DeleteMapping(value = {"/delete/{uuid}" })
@@ -136,7 +175,7 @@ public class LocationController {
 
 		locationRepository.findById(uuid)
 				.orElseThrow(() -> new RuntimeException("Location not exist with id: " + uuid));
-		
+
 		locationRepository.deleteById(uuid);
 
 		return new ResponseEntity<>(uuid, HttpStatus.OK);

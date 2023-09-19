@@ -2,12 +2,14 @@ package locations.management.service.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import locations.management.service.models.Location;
+import locations.management.service.models.GeoLocation;
+import locations.management.service.models.LocationCreateDto;
 import locations.management.service.models.LocationEntity;
 import locations.management.service.repository.LocationRepository;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,6 +47,9 @@ public class LocationControllerTest {
 	
 	@Autowired
 	ObjectMapper objectMapper;
+	
+	@Autowired
+	ModelMapper modelMapper;
 
 
 	protected void setUp() {
@@ -88,11 +93,11 @@ public class LocationControllerTest {
 
 	@Test
 	public void testCreateLocation() throws Exception {
-		LocationEntity locationToSave = createTestLocation();
-		LocationEntity savedLocation = createTestLocation();
+		LocationCreateDto locationToSave = createDtoTestLocation();
+		LocationEntity savedLocation = modelMapper.map(locationToSave, LocationEntity.class);;
 		savedLocation.setUuid(UUID.randomUUID());
 
-		when(locationRepository.save(locationToSave)).thenReturn(savedLocation);
+		when(locationRepository.save(savedLocation)).thenReturn(savedLocation);
 
 		mvc.perform(post("/location/create")
 				.accept(MediaType.APPLICATION_JSON)
@@ -103,7 +108,7 @@ public class LocationControllerTest {
 				.andReturn()
 				.getResponse();
 
-		verify(locationRepository, times(1)).save(locationToSave);
+		verify(locationRepository, times(1)).save(savedLocation);
 		verifyNoMoreInteractions(locationRepository);
 	}
 
@@ -152,6 +157,21 @@ public class LocationControllerTest {
         verify(locationRepository).deleteById(locationUuid);
     }
 
+	private LocationCreateDto createDtoTestLocation() {
+
+		List<String> tags = Arrays.asList("popular", "favorite", "innovation_center");
+
+		return LocationCreateDto.builder()
+				.address("Voutadon 29-23, Athina 118 54")
+				.code("000000A")
+				.geoLocation(GeoLocation.builder().lat(37.978693).lon(23.712884).build())
+				.name("HQ")
+				.rewardCheckinPoints(1)
+				.tags(tags)
+				.type("office")
+				.build();
+	}
+	
 	private LocationEntity createTestLocation() {
 
 		List<String> tags = Arrays.asList("popular", "favorite", "innovation_center");
@@ -159,11 +179,11 @@ public class LocationControllerTest {
 		return LocationEntity.builder()
 				.address("Voutadon 29-23, Athina 118 54")
 				.code("000000A")
-				.location(Location.builder().lat(37.978693).lon(23.712884).build())
+				.geoLocation(GeoLocation.builder().lat(37.978693).lon(23.712884).build())
 				.name("HQ")
 				.rewardCheckinPoints(1)
 				.tags(tags)
 				.type("office")
 				.build();
-		}
+	}
 }

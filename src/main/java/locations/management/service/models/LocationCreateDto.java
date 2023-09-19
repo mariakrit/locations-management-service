@@ -2,16 +2,18 @@ package locations.management.service.models;
 
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class LocationCreateSwaggerDto {
+@Builder
+public class LocationCreateDto {
 
 	private String address;
 
 	private String code;
 
-	private Location location;
+	private GeoLocation geoLocation;
 
 	private String name;
 

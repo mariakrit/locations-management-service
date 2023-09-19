@@ -73,11 +73,12 @@
 		    <version>9.0.0-RC3</version>
 		    <scope>provided</scope>
 		</dependency>
-		<!-- ObjectMapper -->
+		<!-- ModelMapper -->
 	    <dependency>
-	   		<groupId>com.fasterxml.jackson.core</groupId>
-	    	<artifactId>jackson-core</artifactId>
-	    </dependency>
+		    <groupId>org.modelmapper</groupId>
+		    <artifactId>modelmapper</artifactId>
+		    <version>2.4.2</version>
+		</dependency>
 	    <!-- Cache Mechanism -->
 	   <dependency>  
 		    <groupId>org.springframework.boot</groupId>  
