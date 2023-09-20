@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,7 +26,7 @@ public class LocationEntity extends EntityWithUUID {
 	private static final String REWARDCHECKINPOINTS = "reward_checkin_points";
 	private static final String TAGS = "tags";
 	private static final String TYPE = "type";
-	
+
 	@Column(name = LocationEntity.ADDRESS)
 	@Nullable
 	private String address;

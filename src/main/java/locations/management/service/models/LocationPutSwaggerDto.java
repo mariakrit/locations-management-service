@@ -9,8 +9,8 @@ public class LocationPutSwaggerDto {
 
 	private String code;
 
-    private int rewardCheckinPoints;
+	private int rewardCheckinPoints;
 
-    private List<String> tags;
- 
+	private List<String> tags;
+
 }

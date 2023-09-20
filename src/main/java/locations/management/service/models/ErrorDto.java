@@ -13,5 +13,5 @@ public class ErrorDto {
 
 	private String message;
 	private int statusCode;
-	
+
 }

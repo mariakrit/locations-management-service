@@ -1,6 +1,5 @@
 package locations.management.service.models;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,12 +18,12 @@ import org.hibernate.annotations.GenericGenerator;
 @AllArgsConstructor
 public class EntityWithUUID {
 
-    private static final String ID = "uuid";
+	private static final String ID = "uuid";
 
 	@Id
-    @Column(name = ID)
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
-    private UUID uuid;
+	@Column(name = ID)
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	private UUID uuid;
 
 }

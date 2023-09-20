@@ -12,9 +12,8 @@ public class SwaggerConfig {
 	@Bean
 	public OpenAPI springOpenAPI() {
 		return new OpenAPI()
-				.info(new Info()
-				.title("Location Management API Docs")
-				.description("Location Management API")
-				.version("v2.0.0"));
+				.info(new Info().title("Location Management API Docs")
+						.description("Location Management API")
+						.version("v2.0.0"));
 	}
 }

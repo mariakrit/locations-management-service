@@ -44,65 +44,63 @@ public class LocationControllerTest {
 
 	@Mock
 	public LocationController locationController;
-	
+
 	@Autowired
 	ObjectMapper objectMapper;
-	
+
 	@Autowired
 	ModelMapper modelMapper;
-
 
 	protected void setUp() {
 		mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 	}
 
 	@Test
-    public void testRetriveAllLocations() throws Exception {
-        List<LocationEntity> mockLocations = new ArrayList<>();
-        mockLocations.add(new LocationEntity());
-        mockLocations.add(new LocationEntity());
+	public void testRetriveAllLocations() throws Exception {
+		List<LocationEntity> mockLocations = new ArrayList<>();
+		mockLocations.add(new LocationEntity());
+		mockLocations.add(new LocationEntity());
 
-        when(locationRepository.findAll())
-               .thenReturn(mockLocations);
+		when(locationRepository.findAll()).thenReturn(mockLocations);
 
-        mvc.perform(get("/location/retrieveAll"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(mockLocations.size()));
+		mvc.perform(get("/location/retrieveAll"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.length()").value(mockLocations.size()));
 
-        verify(locationRepository).findAll();
-    }
-	
+		verify(locationRepository).findAll();
+	}
+
 	@Test
-    public void testRetrieveByIdLocation() throws Exception {
-        UUID locationUuid = UUID.randomUUID();
-        LocationEntity locationToRetreive = createTestLocation();
-        locationToRetreive.setUuid(locationUuid);
+	public void testRetrieveByIdLocation() throws Exception {
+		UUID locationUuid = UUID.randomUUID();
+		LocationEntity locationToRetreive = createTestLocation();
+		locationToRetreive.setUuid(locationUuid);
 
-        when(locationRepository.findById(locationUuid))
-               .thenReturn(Optional.of(locationToRetreive));
+		when(locationRepository.findById(locationUuid)).thenReturn(Optional.of(locationToRetreive));
 
-        mvc.perform(get("/location/retrieveById/{uuid}", locationUuid))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        		.andReturn()
-        		.getResponse();
+		mvc.perform(get("/location/retrieveById/{uuid}", locationUuid))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andReturn()
+				.getResponse();
 
-        verify(locationRepository).findById(locationUuid);
-    }
+		verify(locationRepository).findById(locationUuid);
+	}
 
 	@Test
 	public void testCreateLocation() throws Exception {
 		LocationCreateDto locationToSave = createDtoTestLocation();
-		LocationEntity savedLocation = modelMapper.map(locationToSave, LocationEntity.class);;
+		LocationEntity savedLocation = modelMapper.map(locationToSave, LocationEntity.class);
+		;
 		savedLocation.setUuid(UUID.randomUUID());
 
 		when(locationRepository.save(savedLocation)).thenReturn(savedLocation);
 
 		mvc.perform(post("/location/create")
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(locationToSave)))
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(locationToSave)))
 				.andExpect(status().isCreated())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andReturn()
@@ -126,9 +124,9 @@ public class LocationControllerTest {
 		when(locationRepository.save(any(LocationEntity.class))).thenReturn(locationToUpdate);
 
 		mvc.perform(put("/location/update/{uuid}", locationUuid)
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(inputFields)))
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(inputFields)))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andReturn()
@@ -137,25 +135,24 @@ public class LocationControllerTest {
 		verify(locationRepository).findById(locationUuid);
 		verify(locationRepository).save(any(LocationEntity.class));
 	}
-	
+
 	@Test
-    public void testDeleteLocation() throws Exception {
-        UUID locationUuid = UUID.randomUUID();
-        LocationEntity locationToDelete = createTestLocation();
-        locationToDelete.setUuid(locationUuid);
+	public void testDeleteLocation() throws Exception {
+		UUID locationUuid = UUID.randomUUID();
+		LocationEntity locationToDelete = createTestLocation();
+		locationToDelete.setUuid(locationUuid);
 
-        when(locationRepository.findById(locationUuid))
-               .thenReturn(Optional.of(locationToDelete));
+		when(locationRepository.findById(locationUuid)).thenReturn(Optional.of(locationToDelete));
 
-        mvc.perform(delete("/location/delete/{uuid}", locationUuid))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        		.andReturn()
-        		.getResponse();
+		mvc.perform(delete("/location/delete/{uuid}", locationUuid))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andReturn()
+				.getResponse();
 
-        verify(locationRepository).findById(locationUuid);
-        verify(locationRepository).deleteById(locationUuid);
-    }
+		verify(locationRepository).findById(locationUuid);
+		verify(locationRepository).deleteById(locationUuid);
+	}
 
 	private LocationCreateDto createDtoTestLocation() {
 
@@ -171,7 +168,7 @@ public class LocationControllerTest {
 				.type("office")
 				.build();
 	}
-	
+
 	private LocationEntity createTestLocation() {
 
 		List<String> tags = Arrays.asList("popular", "favorite", "innovation_center");
